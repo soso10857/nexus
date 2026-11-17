@@ -34,7 +34,30 @@ const seed={version:2,profile:{name:'SOSO',id:'SOSO-0426'},vaults:[
 {id:'personal',name:'Coffre personnel',category:'Personnel',icon:'◆',color:'#63e6a7',balance:34414.95,goal:40000,date:'',description:'Réserve libre et projets personnels',createdAt:'2026-11-17T09:00:00.000Z'},
 {id:'work',name:'Coffre travail',category:'Travail',icon:'▤',color:'#6e9fff',balance:25000,goal:30000,date:'',description:'Réserve de travail et projets',createdAt:'2026-11-17T09:00:00.000Z'}],transactions:[],expenses:[],portfolio:[{symbol:'AAPL',name:'Apple',qty:3,buy:181.20,current:194.60},{symbol:'MC',name:'LVMH',qty:2,buy:628,current:611.50},{symbol:'NVDA',name:'NVIDIA',qty:4,buy:121.40,current:137.80},{symbol:'ADS',name:'adidas',qty:3,buy:218.50,current:231.20},{symbol:'MSFT',name:'Microsoft',qty:2,buy:402.30,current:426.80},{symbol:'AMZN',name:'Amazon',qty:3,buy:186.70,current:193.40},{symbol:'GOOGL',name:'Alphabet',qty:3,buy:169.20,current:177.60},{symbol:'TSLA',name:'Tesla',qty:2,buy:244.50,current:236.90},{symbol:'OR',name:"L'Oréal",qty:2,buy:386,current:401.50},{symbol:'RMS',name:'Hermès',qty:1,buy:2145,current:2208},{symbol:'AIR',name:'Airbus',qty:3,buy:158.40,current:164.20},{symbol:'SAN',name:'Sanofi',qty:4,buy:101.80,current:98.70}]};
 let state=load();
-function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&Array.isArray(s.vaults)){if(!Array.isArray(s.portfolio)||s.portfolio.length<12)s.portfolio=seed.portfolio;return s}}catch(e){}localStorage.setItem(KEY,JSON.stringify(seed));return structuredClone(seed)}
+
+function load(){
+  try {
+    const s = JSON.parse(localStorage.getItem(KEY));
+
+    if(s && Array.isArray(s.vaults)){
+      if(s.vaults.length === 0){
+        s.vaults = structuredClone(seed.vaults);
+      }
+
+      if(!Array.isArray(s.portfolio) || s.portfolio.length < 12){
+        s.portfolio = structuredClone(seed.portfolio);
+      }
+
+      localStorage.setItem(KEY, JSON.stringify(s));
+      return s;
+    }
+  } catch(e) {}
+
+  const fresh = structuredClone(seed);
+  localStorage.setItem(KEY, JSON.stringify(fresh));
+  return fresh;
+}
+
 function save(){localStorage.setItem(KEY,JSON.stringify(state))}
 function money(n){return Number(n||0).toLocaleString('fr-FR',{style:'currency',currency:'EUR'})}
 function total(){return state.vaults.reduce((a,v)=>a+Number(v.balance||0),0)}
